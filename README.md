@@ -2,10 +2,10 @@
 
 ## Year 1
 ### 1st Semester
--
+- Nothing
 
 ### 2nd Semester
--
+- Nothing
 
 ## Year 2
 ### 1st Semester
