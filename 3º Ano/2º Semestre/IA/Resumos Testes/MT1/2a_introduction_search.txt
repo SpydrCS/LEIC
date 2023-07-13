@@ -1,0 +1,38 @@
+agents for problem solving
+	“Problem Solving Agent”: Tries to find the sequence of actions that leads to a desirable state
+
+problem formulation:
+	what are possible actions?
+	what are possible states?
+	how to evaluate states
+search problem:
+	solution; sequence of actions
+	final stage is execution
+
+formulate -> search -> execute
+
+search problems:
+	definition:
+		set S of states (possible infinite)
+		initial state s: s (inside) S
+		transition relationship T across state space
+		set of final (objective) states O: O (inside) S
+
+problem can be represented by a graph, where:
+	nodes represent states
+	arcs (connections) represent pairs of transition relation
+problem solved by finding path between initial state and objective state
+
+agents for problem solving:
+	problem formulation:
+		state representation
+		initial (current) state
+		objective test (define desired states)
+		operators (name, preconditions, effects, cost)
+		solution cost
+
+problem formulation:
+	single state problems - deterministic and acessible environment
+	multiple state problems - deterministic but inaccessible environment
+	contingency problems - non-deterministic and inaccessible environment, sensors must be used during execution, solution is a tree or policy)
+	exploration problems - (unknown state space)

@@ -1,0 +1,300 @@
+rede
+	dispositivos
+		camada fisica (ex. hubs, repetidores, antenas, cabos)
+		camada logica (ex. switches, bridges)
+		camada de rede (ex. routers)
+		camada de transporte e superior (ex. gateways)
+
+protocolo IP
+	comunicacao sem ligacao
+		best-effort: nao ha garantias de entrega
+		nao ha tentativas de recuperacao
+		pacotes podem perder-se, ser permutados, repetidos, etc
+	pacotes podem ser fragmentados
+	estrutura de enderecos hierarquica
+		endereco atribuido de forma estatica ou dinamica
+
+comunicacao na internet
+	dentro de uma sub-rede local:
+		comunicacao com base em MAC address
+		switch optimiza distribuicao de pacotes na rede local
+		tabela de enderecos MAC: construida com pedidos/anuncios address resolution (ARP)
+			pedido: meu MAC + quem tem este IP?
+			resposta: meu MAC + teu MAC + meu IP
+
+routing de pacotes
+	existem aqui como se fosse um protocolo de propagacao baseado em gossip que é "eu vou tentar propagar a informacao de routing que tenho para routers 
+	que tenho ao lado"
+	informacao nao e autenticada
+
+protocolo TCP
+	objetivo: comunicacao fiavel entre duas maquinas
+		ligacoes de longa duracao, stream de bytes => uma em cada direcao
+	aplicacoes identificadas por um numero de porta (16 bits)
+	algumas portas sao reservadas
+	
+	handshake e comunicacoes TCP
+		ligacoes geridas com base em numeros de sequencia
+		dados enviados em segmentos: 1 segmento = 1 pacote IP
+		receptor confirma (ACK) rececao de dados
+		emissor pode retransmitir e adaptar cadencia em funcao de timeouts
+	flag FIN termina a ligacao (implica ACK)
+	flag RST permite cliente terminar ligacao sem ACK (detetou um erro)
+	UDP: wrapper do IP sem ligacoes/gestao do TCP
+
+Domain name service (DNS)
+	permite mapear nomes legiveis em enderecos IP
+
+Modelo CIA
+	Confidencialidade, Integridade e Disponibilidade
+	ataques potenciais em todos os niveis da rede e com diversos niveis de intervencao:
+		fisico: ligacao direta ao meio de comunicacao
+		dispositivos manipulados/configurados para realizar ataques
+		infraestruturas elaboradas de vigilancia e controlo de comunicacoes
+
+adversarios possiveis
+	observar comunicoes (eavesdropper)
+	inserir pacotes (off path)
+	observar e inserir pacotes (on path)
+	controlar todas as comunicacoes (man in the middle)
+
+	camada fisica:
+		wiretapping
+			processo de escutar um canal de comunicacoes onde entidades terceiras estao a trocar informacao
+			atacante liga equipamento seu ao meio de comunicacao para poder recolher informacao
+			writeapping ativo: atacante pode injetar/modificar informacao ou fazer DoS
+		eavesdropping/packet sniffing
+			forma de wiretapping em redes de comunicacao, onde se recolhem e armazenam os pacotes trocados entre utilizadores legitimos de uma 
+			sub-rede
+			permite ao atacante observar todas as comunicacoes nao cifradas
+			para isso, basta ter acesso ao meio de comunicacao e uma interface de rede capaz de funcionar em modo promiscuo
+				em redes wireless, é trivial
+				em rede wireless protegidas, credenciais de acesso dao acesso e por vezes permitem wiretapping total
+				em redes fisicas, basta ter ponto de acesso a uma tomada de rede
+		MAC flooding (melhor sniffing)
+			hoje em dia  quase todas as redes sao switched
+			um switch mantem uma tabela dos enderecos MAC que estao em cada segmento
+			injeta mensagens com MACs novos na rede para as tabelas seres esvaziadas dos enderecos reais
+			switch comeca entao a retransmitir todos os pacotes permitindo obter um sniffing mais eficaz
+			ataque tambem afeta switches vizinhos
+		MAC spoofing (usurpar MAC addresses)
+			podemos configurar a nossa placa de rede para usar um MAC especifico
+			assim, a nossa placa vai transmitir e receber informacao como se fosse o alvo
+			possivel pq nao existe autenticacao na camada logica
+	camada IP:
+		nao existe autenticacao (podemos enviar pacotes a quem quisermos)
+			scanning
+				detetar maquinas na rede
+				enviar mensagens e observar respostas para caracterizar alvo potencial, detetar vulnerabilidades, etc
+			DoS
+				sobrecarregar alvo com mais mensagens do que as que consegue tratar
+		ARP poisoning/spoofing (usurpar IP)
+			protocolo ARP permite traduzir enderecos IP em enderecos MAC	
+				quando maquina nao sabe MAC de outro com quem quer comunicar, envia pedido ARP indicando IP com quem pretende comunicar
+				se maquina alvo estiver a escuta, responde com o seu IP e o endereco MAC
+			facto das maquinas e switches fazerem cache deste informacao permite usurpar IPs
+				inunda-se a rede com respostas ARP em que se associa o nosso MAC address aos IPs que nos interessam
+			permite fazer man in the middle
+				convence-se nós legitimos que a nossa maquina possui o IP do interlocutor
+				implica que pacotes sao enviados para o nosso MAC address
+				lemos/processamos informacao e depois enviamos para o MAC address certo
+		hijacking de routing
+			anunciar um router falso
+				atacante faz com que maquinas nessa subnet passem a utilizar como router uma maquina controlada pelo atacante
+			informacao de routing nao autenticada: ao nivel do BGP é possivel contaminar as tabelas e redirecionar trafego
+
+		rogue DHCP
+			DHCP funciona da seguinte forma:
+				cliente faz anuncio de que precisa de um IP
+				servidor responde com proposta de IP (podem haver varios servidores com varias respostas)
+				cliente pede diretamente ao servidor DHCP o IP
+				servidor responde com ACK
+				quando existem varias subnets, um agente DHCP pode servir de intermediario para falar com o servidor DHCP
+			um rogue DHCP server pode convencer um cliente de que o router está num IP controlado pelo adversario, permitindo man in the middle
+	DNS:
+		nada é autenticado
+			possivel sermos redirecionados para maquina diferente
+		importante usar autenticacao da maquina relativamente a nome de dominio
+		DNS spoofing:
+			convencer alvo que o servidor DNS é uma maquina controlada pelo atacante, permitindo:
+				fornecer enderecos IP falsos, para maquinas controladas pelo atacante
+				para enganar os utilizadores apresentando-lhes servicos crediveis
+				extrair informacao
+			primeiro passo pode ser efectuado diretamente na maquina do alvo (ex. com malware)
+		DNS (cache) poisoning:
+			conhecido como Kaminsky Attack
+				bombardear servidor DNS local com respostas de resolucao DNS
+				faz-se brute-force aos parametros desconhecidos na pergunta DNS
+				servidor DNS local aceita resposta que contem IP controlado pelo atacante
+				servidor DNS local informa maquina do utilizador com IP errado
+			impacto aumenta com caching de enderecos resolvidos
+	terminacao de ligacoes:
+		no TCP nao ha qualquer forma de um nó saber se um pacote veio do emissor com quem pretende falar
+			basta que o pacote tenha o formato correto para ser aceite
+		um ataque simples é a terminacao de ligacoes indesejadas:
+			enviar RST a um cliente termina a tentativa de ligacao
+		para lancar ataque destes é importante controlar (parte da) infraestrutura
+	
+	spoofing às cegas (off path):
+		envia-se mensagem inicial SYN
+		nao conseguimos ver o numero de sequencia da resposta
+		adivinhamos o numero da sequencia (normalmente baseado no relogio)
+		mitigacao:
+			usar numero de sequencia aleatorio
+	TCP session hijacking:
+		usurpacao de uma sessao legitima por parte de um atacante
+			atacante intromete-se na sessao para entregar mensagens em nome de outra entidade
+		assumindo que existe uma troca inicial que estabelece uma autenticacao, o atacante ja nao necessita de ter credenciais
+			faz hijacking da sessao ja depois do utilizador legitimo ter-se autenticado
+			diferente de spoofing: ai o atacante inicia sessao em nome do utilizador legitimo e precisaria das credenciais
+		3 fases (tracking, des-sincronizacao, injecao)
+		é eficaz porque:
+			nao ha contra-medidas eficazes
+			o TCP/IP é vulneravel e o ataque é simples de executar
+			permite fazer bypass a processos de autenticacao que nao sao efetuados/associados sobre um canal seguro:
+				passwords, one-time passwords, etc
+			permite enganar routers que estao a filtrar sources porque os pacotes aparentam vir de fontes legitimas
+		dificuldade:
+			mais dificil que spoofing e exige capacidade de observar tragefo:
+				esperar que alvo estabelece sessao
+				remover alvo do sistema, impedindo-o de comunicar
+				tomar conta da sessao estabelecida
+				implica ser capaz de saber tanto sobre a sessao como o alvo, incluindo os TCP sequence numbers, e tomar conta da comunicacao
+			mas pode ser a unica opcao no caso de haver credenciais secretas
+		mais em detalhe:
+			sniffing para obter informacao necessaria e identificar momento para intervir
+			des-sincronizar (ex. avancar o seq number de servidor com mensagem)
+				o alvo e o servidor ficam a tentar re-sincronizar mas nao encerram sessao
+			agora o atacante:
+				sabe os numeros certos de sequencia correta
+				pode comunicar com o alvo entregando-lhe mensagens e vendo respostas
+				tentar man in the middle
+	UDP Hijacking
+		nao ha controlo de trafego como TCP
+		atacante consegue facilmente intervir na transferencia e tentar responder primeiro que os pares
+		utilizando tecnica man in the midle o ataque torna-se mais simples:
+			nao e necessario ser mais rapido na resposta
+
+conclusao:
+	protocolos de rede nao sao secure by design: seguranca e adicionada a posteriori
+	solucoes criptograficas permitem resolver o problema em parte:
+		seguranca entre endpoints:
+			camada de rede (ex. ligar dois routers diretamente um ao outro)
+			camada de transporte (ex. todas as ligacoes HTTPS)
+			camada de aplicacao (ex. Signal, whatsapp)
+		nao evitam ataques a infra-estrutura, metadados, DoS, etc
+			evidencia de que estes ataques sao explorados na pratica em grande escala
+
+defesas
+	problema:
+		como proteger as nossas maquinas ligadas à rede?
+			maior numero de maquinas expostas => maior superficie de ataque
+			chega desligar todos os servicos desnecessarios?
+				dificil de fazer
+					numero de maquinas, diversidade de sistemas, etc pode ser mt grande
+				insuficiente
+					definicao pouco clara da superficie de ataque
+					nao permite defesa em profundidade, mediacao completa
+	solucao tipica:
+		definir uma fronteira clara entre organizacao e internet
+			firewalls
+				locais:
+					correm na maquina das aplicacoes/utilizadores
+					podem incluir filtros baseados no contexto da aplicacao/utilizador
+				na rede:
+					interceptam comunicacoes de/para outras maquinas
+					definem fronteira com o exterior: tudo o que está fora é hostil
+				filtragem de pacotes
+					olham para cabecalhos de pacotes: IPs, protocolo, etc
+					tentam eliminar comunicacoes maliciosas
+					protegem maquinas internas de acesso externo
+					fornecem às maquinas internas funcionalidades que exigem acesso externo
+					ex. bloquear enderecos internos desconhecidos
+					tipos:
+						sem estado:
+							olha para cada pacote individualmente, nao tem em conta o contexto de onde vem
+							tem de ser mais permissivo
+						com estado:
+							mantem registo de ligacoes ativas para verificar se pacote "faz sentido" nesse contexto
+							dificil de fazer para contextos elaborados
+					como contornar:
+						pode ser necessario para utilizadores legitimos
+						padrao: usar porta geralmente usada por outro servico
+						tuneis:
+							encapsular um protocolo dentro de outro protocolo (ex. vpn)
+				politica de controlo de acesso
+					distingue trafego recebido de enviado
+					permitir todos os acesso de dentro para fora
+					restringir acesso de fora para dentro:
+						permitir acesso a servicos explicitamente designados para exposicao
+						negar todos os outros acessos a servicos disignados como internos
+					como tratar trafego que nao referido explicitamente nas politicas?
+						default allow => permitir todos os acessos exceto problemas especificos
+						default deny
+							permitir apenas alguns acessos comuns a todos os sistemas
+							escolha mais conservadora, protecao por omissao
+							comecar por esta escolha e depois adicionar excecoes
+							provoca sempre instabilidade inicial
+			network address translation (NAT)
+				enderecos IP nao podem ser unicos globalmente (nao temos suficientes)
+				traducao de endereco "globais" para "locais"
+				funcionamento:
+					mantem tabela: (ip, porta) internos => porta na rede publica
+					para menssagens enviadas para o exterior:
+						verifica se tabela contem porta publica => senao cria entrada
+						traduz (ip, porta) internos => (endereco router, porta publica)
+					para mensagens recebidas pelo router do exterior:
+						verifica se tabela contem porta publica => senao faz drop
+						traduz (router, porta publica) => (ip, porta) internos
+				vantagens:
+					reduz exposicao ao exterior
+						ligacoes externas descartadas, a nao ser que iniciadas internamente
+				desvantagens:
+					pode perturbar funcionamento de protocolos
+					facil de fazer bypass para adversario ativo (slipstream):
+						site do atacante corre javascript em cliente na rede interna
+						envia mensagens de dentro para fora "baralham" as tabelas NAT
+						ex. possivel aceder a outras portas na mesma maquina
+			proxies de aplicacoes especificas
+				obrigar trafego de uma ou mais aplicacoes a passar por proxy
+				um proxy é um MiM  "do bem"
+			network intrusion detection systems
+				monitorizar trafego e tentar identificar ataque
+				pode ser feito host-based ou globalmente na rede
+				host-based:
+					defesa em profundidade: fazer detecao mais agressiva em algumas maquinas
+					nao se generaliza por causa do custo de adotar esta aproximacao em todas as maquinas
+				na rede:
+					manter tabela de ligacoes ativas e acompanhar estado de cada uma
+					procurar padroes
+					vantagem: nao é necessario alterar maquinas individuais
+					desvantagens:
+						exigente em termos de processamento em ligacoes de alto debito
+						menos preciso (para reduzir falsos negativos => muitos falsos positivos)
+			analise de logs:
+				barata
+				podem ser corridas offline
+				analisam interpretacao dos servidores/maquinas
+				apenas reativo => detecao apos ataque
+					nao permite previnir em tempo real
+				atacante pode modificar proprios logs
+			pen-testing:
+				em vez de esperar por ataque, simular situacoes de ataque e ver como sistema reage
+				opcoes:
+					minimo: ferramentas de vulnerability scanning automaticas
+					auditoria tecnica feita por especialistas/ethical hackers
+					vantagens:
+						proativo: falha nao causa perda de valor e permite corrigir sistema
+						optimizacao: permite melhorar sistema/reduzir falsos positivos
+							ataque tratado noutro local nao precisa de ser monitorizado
+					desvantagens:
+						custos podem ser elevados
+						por vezez um ataque simulado pode causar danos
+			honey-pots:
+				acelerar detecao expondo um sistema atraente para atacantes
+				entidades internas sabem que sistema nao serve para nada
+				qualquer tentativa de acesso é ataque ou erro
+				funciona melhor com ataques automatizados
+		sempre: proteger a rede interna de ameacas externas
+		por vezes: proteger rede interna de maquinas infetadas
+		tecnologia: filtrar/limitar trafego de rede

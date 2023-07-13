@@ -1,0 +1,105 @@
+Certificados de chave publica
+	Problemas na pratica:
+		1. Como se constroi o canal entre o Bob e a TTP?
+		2. E se a TTP estiver offline?
+		3. Como é que garantimos que o Bob e a Alice confiam na mesma TTP?
+		4. O que é que "Trust"/Confianca na TTP significa?
+
+	CA -> certification authority
+	alice prova a CA que possui pk (private key)
+		assinando um pedido de certificado que contem pk usando a chave secreta
+		simplesmente porque CA fornece pk e chave secreta correspondente a alice
+	CA verifica todos os dados relevantes para certificado
+		identidade de alice + chave publica de alice
+		informacao especifica de CA: identidade e novo numero de serie
+		validade (data de inicio e fim)
+	CA assina documento eletronico com esta informacao
+	
+
+Verificacao de certificados
+	suponhamos que alice envia a bob certificado com:
+		identidade de alice + chave publica de alice
+		periodo de validade
+		meta-informacao adicional
+		tudo assinado por uma autoridade de certificacao CA
+	bob deve fazer o seguinte:
+		1. verificar correcao da identidade da alice
+		2. verificar meta-informacao
+		3. verificar que CA é de confianca
+		4. obter chave publica da CA para verificar assinatura no certificado
+		PKI resolve os pontos 3 e 4
+
+
+quem é que envia/recebe certificado de chave publica em cada caso?
+	cifras assimetricas
+		chave publica pertence ao recetor
+		emissor tem de obter certificado do recetor a priori
+	assinaturas digitais
+		chave publica pertence ao emissor
+		pode assinar e enviar certificado juntamente com resto
+	acordo de chaves
+		se for mutuamente autenticado, ambos teem de enviar certificados
+		
+
+PKI
+	tudo o que é necessario para assegurar que:
+		o utilizador do certificado recebe garantia
+		uma chave publica pertence a outra entidade
+		
+
+pergunta de teste
+	qual e a garantia q tenho se alguem me mandar o certificado dessa pessoa e o certificado da CA pela internet
+		n ha garantia pq qq pessoa podia ter criado esses certificados
+
+conclusao: a chave da alice e autentica se:
+	o bob conhece anteriormente o certificado da CA que emitiu o certificado da alice
+	bob confia nessa CA para ter verificado que a alice é titular daquela chave publica
+
+cadeias de certificacao
+	qualquer pessoa pode gerar um certificado auto-assinado
+		a dizer que é uma CA especifica
+	validar um certificado de raiz implica:
+		acreditar que a chave secreta associada pertence à CA
+		acreditar que essa CA é de confianca => so produz certificados bons
+	existe uma hierarquia de CAs
+		ex. para bob autenticar a chave de alice, obtem o certificado de alice
+		para validar o certificado da alice, bob obtem o certificado da CA da alice
+		bob verifica que certificado da alice é valida com base no certificado da CA
+		bob depois ainda precisa de decidir se confia na chave da CA da alice
+
+gestao PKI: 
+	registo
+		autoridades de registo/registration authorities (RA)
+			front-end: contacto direto com utilizadores
+			responsaveis por verificar os dados colocados nos certificados
+			responsaveis por verificar posse de chave privada correspondente à chave publica presente no certificado
+	certificacao
+		autoridade de certificacao/certificaction authorities (CA)
+			back-end: infra-estrutura que produz chaves e certificados
+			tipicamente high-security
+	revogacao
+		certificados sempre invalidos fora do periodo de validade
+		feito pelos CAs usando Certification Revokation Lists	(CRL)
+			CA publica periodicamente black-list de certificados revogados
+		no mundo real:
+			trusted service provider list (TSL)
+				white-list atualizada de certificados
+				usado em comunidades pequenas
+			online certificate status protocol (OCSP)
+				servidor seguro verifica estado de revogacao
+				usado em contextos organizacionais
+			certificate pinning
+				web-servers/browsers gerem white-lists proprias
+				permitem identificar certificados mais importantes para entidades criticas (ex. google)
+
+	exemplo: cartao de cidadao
+		autoridade de registo: registo civil, loja do cidadao, etc
+		autoridade de certificacao: em instalacoes proprias
+		a CA gera chaves, assina certificados, produz cartoes
+		a RA entrega cartoes/chaves aos titulares depois de verificacao de identidade
+
+politicas de certificacao
+	certificate policy
+		conjunto de regras de operacao:
+			direitos e responsabilidades para titulares e utilizadores
+			direitos e responsabilidades para as CAs

@@ -1,0 +1,38 @@
+Problem 1. Run-Time Environments (10 pts)
+
+Many modern imperative programming languages support the abstraction of procedures and functions. To support the execution of procedures, compilers make use of activation records or AR that capture data related to the execution of procedures and functions. In this context, answer the following questions:
+
+a. 5 pts
+b. 5 pts
+
+
+Problem 2. Local Register Allocation (20 pts)
+
+Consider the snippet of a CFG depicted below corresponding to a procedure that uses 3 procedure local variables, named a, b and c as well as temporary variables t0 through t2.
+
+
+Problem 3. Control-Flow Graph and Global Register Allocation (10 pts)
+
+Consider the 3-address code below corresponding to a function with 2 arguments and local variables a, b, c and d.
+
+For this code determine the following:
+a. 5 pts
+b. 15 pts
+c. 10 pts
+
+
+Problem 4. Iterative Data-Flow Analysis (20 pts)
+
+a. 5 pts
+b. 5 pts
+c. 5 pts
+d. 5 pts
+
+
+Problem 5. Code Optimization (20 pts)
+
+Consider the following excerpt of codee
+
+a. 10 pts
+b. 5 pts
+c. 5 pts

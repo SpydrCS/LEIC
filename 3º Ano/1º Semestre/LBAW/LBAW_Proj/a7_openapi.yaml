@@ -1,0 +1,423 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0'
+  title: 'LBAW PowerEvents  Web API'
+  description: 'Web Resources Specification (A7) for PowerEvents'
+
+servers:
+- url: http://lbaw.fe.up.pt
+  description: Production server
+
+tags:
+  - name: 'M01: Authentication and Individual Profile'
+  - name: 'M02: Events'
+  - name: 'M03: Polls and Comments'
+  - name: 'M04: Static Pages'
+
+paths:
+
+  /login:
+    get:
+      operationId: R101
+      summary: 'R101: Login Form'
+      description: 'Provide login form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+      responses:
+        '200':
+          description: 'Ok. Show log-in UI'
+    post:
+      operationId: R102
+      summary: 'R102: Login Action'
+      description: 'Processes the login form submission. Access: PUB'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+ 
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+ 
+      responses:
+        '302':
+          description: 'Redirect after processing the login credentials.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to authenticated home page.'
+                  value: '/homepage/user/{id}'
+                302Error:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
+ 
+  /logout:
+    post:
+      operationId: R103
+      summary: 'R103: Logout Action'
+      description: 'Logout the current authenticated used. Access: USR, ADM'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+      responses:
+        '302':
+          description: 'Redirect after processing logout.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples: 
+                302Success:
+                  description: 'Successful logout. Redirect to non autenticated homepage.'
+                  value: '/homepage'
+
+  /register:
+    get:
+      operationId: R104
+      summary: 'R104: Register Form'
+      description: 'Provide new user registration form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+      responses:
+        '200':
+          description: 'Ok. Show sign-up UI'
+
+    post:
+      operationId: R105
+      summary: 'R105: Register Action'
+      description: 'Processes the new user registration form submission. Access: PUB'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                date_of_birth:
+                  type: date
+                gender:
+                  type: enum
+                nationality:
+                  type: string
+                password:
+                  type: string
+              required:
+                - name
+                - email
+                - date_of_birth
+                - gender
+                - nationality
+                - password
+
+      responses:
+        '302':
+          description: 'Redirect after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to authenticated homepage.'
+                  value: '/homepage/user/{id}'
+                302Failure:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
+
+  /users/{id}:
+    get:
+      operationId: R106
+      summary: 'R106: View user profile'
+      description: 'Show the individual user profile. Access: USR'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show view profile UI'
+
+  /events:
+    get:
+      operationId: R107
+      summary: 'R107: Homepage/Browse Events'
+      description: 'Show the homepage. Access: USR'
+      tags:
+        - 'M02: Events'
+
+      responses:
+        '200':
+          description: 'Ok. Show homepage UI'
+
+  /event{id}:
+    get:
+      operationId: R108
+      summary: 'R108: Event Page'
+      description: 'Show the Event Page. Access: USR'
+      tags:
+        - 'M02: Events'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show event page UI'
+ 
+  /api/events:
+   get:
+     operationId: R201
+     summary: 'R201: Search Events API'
+     description: 'Searches for events and returns the results as JSON. Access: PUB.'
+
+     tags:
+       - 'M02: Events'
+
+     parameters:
+       - in: query
+         name: query
+         description: String to use for full-text search
+         schema:
+           type: string
+         required: false
+       - in: query
+         name: start_datetime
+         description: String to use to filter events by given datetime
+         schema:
+           type: string
+         required: false
+       - in: query
+         name: location
+         description: String with the location of the event
+         schema:
+           type: string
+         required: false
+       - in: query
+         name: paid
+         description: Boolean with the price flag value (False - free, True - paid)
+         schema:
+           type: boolean
+         required: false
+
+     responses:
+       '200':
+         description: Success
+         content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   id:
+                     type: string
+                   owner:
+                     type: string
+                   name:
+                     type: string
+                   description:
+                     type: string
+                   tag:
+                     type: string
+                   start_datetime:
+                     type: string
+                   end_datetime:
+                     type: string
+                   price:
+                     type: string
+                   max_capacity:
+                     type: string
+                   attendee_counter:
+                     type: string
+                   location:
+                     type: string
+                   is_private:
+                     type: string
+                   is_full:
+                     type: string
+
+               example:
+                 - id: 1
+                   owner: Bruno Azevedo
+                   name: Addvolt business model
+                   description: Where did Addvolt business idea came from and how was it brought to fruition.
+                   tag: Startup
+                   start_datetime: 2022-12-01
+                   end_datetime: 2022-12-03
+                   price: 0
+                   max_capacity: 100
+                   attendee_counter: 45
+                   location: Porto, São Mamede
+                   is_private: False
+                   is_full: False
+                  
+                 - id: 20
+                   owner: Afonso Carvalho
+                   name: Ethereum, the Blockchain
+                   description: In what does Ethereum consists in? What is a blockchain? Explaining base concepts in a easy, friendly way.
+                   tag: Blockchain, Crypto
+                   start_datetime: 2023-02-02
+                   end_datetime: 2022-04-02
+                   price: 20
+                   max_capacity: 130
+                   attendee_counter: 20
+                   location: Porto, FEUP
+                   is_private: False
+                   is_full: False
+  
+  /api/comments/{id}:
+   get:
+     operationId: R202
+     summary: 'R202: Search Poll Comments API'
+     description: 'Searches for comments in specific polls and returns the results as JSON. Access: PUB.'
+
+     tags:
+       - 'M03: Polls and Comments'
+
+     parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+     responses:
+       '200':
+         description: Success
+         content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   id:
+                     type: string
+                   owner:
+                     type: string
+                   poll:
+                     type: string
+                   content:
+                     type: string
+                   likes:
+                     type: string
+                   dislike:
+                     type: string
+
+               example:
+                 - id: 1
+                   owner: Tanjiro Kamado
+                   poll: 1
+                   content: What time is the event starting?
+                   likes: 13
+                   dislikes: 0
+                  
+                 - id: 4
+                   owner: Killua Zoldyck
+                   poll: 7
+                   content: Looking forward to hearing you Afonso! Let's go
+                   likes: 44
+                   dislikes: 1
+  
+  /api/polls/{id}:
+   get:
+     operationId: R203
+     summary: 'R203: Search Event Polls API'
+     description: 'Searches for polls in specific events and returns the results as JSON. Access: PUB.'
+
+     tags:
+       - 'M03: Polls and Comments'
+
+     parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+     responses:
+       '200':
+         description: Success
+         content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   id:
+                     type: string
+                   event:
+                     type: string
+                   title:
+                     type: string
+
+               example:
+                 - id: 1
+                   event: 1
+                   title: General Questions
+                  
+                 - id: 7
+                   event: 20
+                   title: Feedback
+  /FAQ:
+    get:
+      operationId: R109
+      summary: 'R109: FAQ Page'
+      description: 'Provide FAQ page. Access: PUB'
+      tags:
+        - 'M04: Static Pages'
+      responses:
+        '200':
+          description: 'Ok. Show FAQ UI'
+
+  /contact:
+    get:
+      operationId: R110
+      summary: 'R110: Contact-us Page'
+      description: 'Provide contact-us page. Access: PUB'
+      tags:
+        - 'M04: Static Pages'
+      responses:
+        '200':
+          description: 'Ok. Show contact-us UI'
+
+  /about:
+    get:
+      operationId: R111
+      summary: 'R111: About-us Page'
+      description: 'Provide about-us page. Access: PUB'
+      tags:
+        - 'M04: Static Pages'
+      responses:
+        '200':
+          description: 'Ok. Show about-us UI'

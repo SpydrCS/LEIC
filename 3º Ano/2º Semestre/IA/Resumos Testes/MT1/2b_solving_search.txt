@@ -1,0 +1,110 @@
+solution search methodology:
+	1. start with initial state
+	2. execute goal test
+	3. if solution not found, use operators to expand current state generating new successor states
+	4. execute objective test
+	5. if solution not found, choose which state to expand next
+	6. return to 3
+
+best first search
+	choose a node (n), with some minimum value
+
+solution search
+	search tree composed by nodes
+	tree node (5 components):
+		state
+		parent (father)
+		action/operator (appliedd to generate it)
+		path cost (from starting node)
+		node depth
+	border/frontier:
+		set of nodes waiting to be expanded
+		represented as queue with operations:
+			is_empty(frontier)
+			pop(frontier)
+			top(frontier)
+			add(node, frontier)
+
+search strategies:
+	defined by order of node expansion
+	evaluates along:
+		completeness: does it always find a solution if one exists?
+		time complexity: how long does it take (number of nodes generated)
+		space complexity: how much memory it needs
+		optimality: does it always find the best (least-cost) solution?
+	time and space complexity measured in terms of:
+		b: maximum branching factor of search tree
+		d: depth of least-cost solution
+		m: maximum depth of state space (may be infinite)
+	types of search strategies:
+		uninformed search (blind)
+		informed search (heuristic/intelligent)
+
+breadth-first search
+	strategy: nodes at lowest depth expanded first
+	good: very systematic search
+	bad: usually takes long time and space
+	generally only small problems can be solved like this
+
+dijstra's algorith (uniform cost search)
+	strategy: always expand border node with lowest cost (measured by solution cost function)
+
+depth-first search:
+	strategy: always expand one of deepest nodes in tree
+	good: very little memory required, good for problems with lots of solutions
+	bad: cannot be used for trees with infinite depth (can get stuck)
+	sometimes limit depth is defined, becoming search with limited depth
+
+iterative deepening search
+	strategy: perform limited depth search, iteratively, always inscreasing the depth limit
+	generally best trategy for problems with large search space where depth of solution now known
+	nodes on bottom level (highest depth) generated one, next-to-bottom level generated twice, etc, etc
+	preferred uninformed search method when search state space is larger than can fit in memory and depth of solution not known
+	
+bidirectional search
+	strategy: run forward search from initial state and backward from tarde, simultaneously
+	good: can greatly reduce time complexity
+	problems:
+		possible to generate predecessors?
+		what if many objective states?
+		how to do "matching" between to searches?
+		what kind of search to do in two halves?
+
+repeated states:
+	failure to detect repeated states can make linear problem into exponential
+	avoid repeated states:
+		dont return to previous state
+		dont create cycles
+		dont use any repeated states
+
+informed/intelligent/heuristic search
+	use problem information to prevent search algorithm from being "lost wandering in the dark"
+	search strat:
+		defined by choosing order of expansion of nodes
+	best-first search:
+		uses evaluation function that returns number indicating interest to expand a node
+
+greedy-search
+	strat:
+		expand node that appear closes to solution
+	not complete (can have cycles)
+	susceptible to false starts
+	not optimal (doesnt always find best solution)
+	necessary to detect repeated states
+
+A* algorithm
+	combines greedy with uniform search minimizing sum of path already carried out with minimum expected solution
+	uses function f(n) = g(n) + h(n)
+		g(n) - total cost (so far) to reach state n
+		h(n) - estimated cost to reach objective (cannot overestimate cost, you have to be optimistic)
+		f(n) - estimated cost of cheapest solution that passes through node n
+	is optimal and complete
+
+weighted A* search
+	A* search has many good qualities, but it expands a lot of nodes
+	can explore fewer nodes, if willing to accept satisficing solutions
+	if we allow A* to overestimate, we risk missing optimal solution but heuristic can be more accurate, reducing nodes expanded
+	example: road engineers know concept of detour index:
+		multiplier applied to straight-line distance to account for curvature of roads
+		ex: 1.3 means that if two cities are 10km apart in straight-line, they are 13km using roads
+	function: f(n) = g(n) + h(n) + W, for some W > 1

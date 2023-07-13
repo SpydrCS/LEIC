@@ -1,0 +1,187 @@
+solucao criptografica de autenticacao
+	protocolo de desafio-resposta (challenge-response)
+		bob cria um desafio fresco (ex. valor aleatorio) e envia para alice
+		alice assina digitalmente ou calcula um MAC sobre o desafio e devolve
+		bob verifica a assinatura/MAC, potencialmente dentro dum tempo limite
+	propriedades dos componentes
+		desafio imprevisivel: impossivel replay
+		assinatura digital, MAC: chaves autenticas, impossivel falsificar
+
+autenticacao de utilizadores
+	cenario
+		utilizador humano (alice) pretende aceder e recurso online
+		recurso disponivel em servidor remoto (bob)
+	solucao
+		provas de identidade
+			alice fornce identidade e pede acesso
+			servidor remoto pede prova de identidade
+			alice fornece prova de identidade
+			exemplos de provas de identidade:
+				algo que se sabe (password)
+					problemas
+						atacante passivo pode passar a conhecer a password
+							precisamos de canal segura para enviar password
+						atacante ativo pode fazer-se passar pelo servidor
+							alice precisa de ter a certeza que esta a falar com o servidor
+				algo que se possui (telemovel)
+				algo que se é (biometria)
+
+ataques de dicionario
+	armazenar hash de password nao é solucao ideal
+		dado H(pw) um atacante pode verificar os seus palpites
+		passwords iguais sao aramazenadas da mesma maneira
+	ataques de dicionario
+		dicionario => colecao de passwords possiveis/provaveis
+		tentar todas as possibilidades ate encontrar a correta, ou...
+		pre-computar todos os H(pw) no dicionario e construir uma hash-table
+			dado H(pw) para pw desconhecido basta procurar na hash-table
+	como tornar ataques de dicionario mais dificeis
+		usar "salt"
+			armazenar (r,H(r || pw)) em que r se chama salt
+			aleatorio, idealmente para cada utilziador
+			agora passa a ser preciso uma tabela para cada valor de salt possivel
+		salt pode nao ser suficiente, portanto usar funcao de hash mais pesadas (tempo, recursos)
+			nao afeta o servidor significativamente
+			afeta muito ataques em dicionarios
+
+smartcards
+	processador embutido em cartao plastico
+		alice traz cartao consigo
+		cartao pode armazenar e processar chaves criptograficas
+		processador do cartao interage com exterior atraves de nfc ou contactos
+
+one-time tokens
+	semelhante a smartcard mas com design especifico para autenticacao (baixo custo, alta seguranca)
+	protocolo tipico nao interativo:
+		criptografia simetrica: segredo pre-partilhado com servidor
+		periodicamente token gera MAC da hora atual
+		servidor pede pass e MAC recente
+	vantagens:
+		defesa em profundidade: conhecer password n é suficiente
+		codigos MAC sao de uso unico
+		codigos MAC futuros imprevisiveis
+	desvantagens:
+		mesmo canal: vulneravel a man-in-the-middle 
+		servidor precisa de armazenar chaves secretas
+
+one-time passcode
+	utiliza simplesmente um dispositivo existente
+		utilizar app noutro dispositivo para gerar codigos one-time
+		utilziar app noutro dispositivo para fazer challenge-response
+		aka token virtual (ex. telemovel)
+	vantagens
+		menos um dispositivo
+		chaves faceis de gerir
+	desvantagens
+		menor garantia de independencia de fatores (ex. telemovel roubado)
+	caso mais simples: codigo enviar por SMS e introduzido como password
+	conclusao:
+		muito utilizado, adequado a casos de uso comum
+			usabilidade vs seguranca
+		insuficiente para cenarios security-critical (ex. confirmar lancamento de missil com SMS)
+
+biometria
+	prova de identidade por caracteristica da pessosa
+		caracteristica fisica (impressao digital, etc)
+		caracteristica comportamental (caligrafia, etc)
+		combinacao de ambas (voz, etc)
+	vantagens
+		nao e transiferivel
+		usabilidade ideal
+		por dar garantias fortes
+	desvantagens
+		problemas de privacidade
+		direito ao esquecimento
+	processo:
+		1. Enrollment (registo)
+			recolha de amostras
+			extracao de "templates"
+		2. Autenticacao (presencial)
+			recolha de amostra
+			match com templates
+	autenticacao remota (3 hipoteses):
+		servidor recebe amostras em bruto
+		servidor recebe "templates"/caracteristicas ja processadas para match
+		servidor recebe apenas resultado de match
+		ordem crescente de necessidade de confianca servidor -> cliente (servidor tem de confiar muito no cliente)
+		ordem decrescente de necessidade de confianca cliente -> servidor	(cliente tem de confiar muito no servidor)
+
+		caso 1:
+			servidor recebe amostras em bruto
+				servidor confia no computador da alice para recolher amostras
+				todas as informacoes biometricas estao armazenadas no servidor central
+		caso 2:
+			servidor recebe template/caracteristica para match
+				servidor confia no computador da alice para recolher amostras e calcular/extrair templates
+				servidor tem acesso a um conjunto de templates/caracteristicas
+				informacao biometrica ainda armazenada no servidor
+		caso 3:
+			servidor recebe apenas resultado
+				servidor confia no computado de alice para processo de autenticacao => implica alguma forma de atestacao/hardware confiavel
+				servidor nao tem acesso a informacao biometrica
+	desafios:
+		tecnicos:
+			precisao
+			usabilidade (ex. registo)
+			estabilidade de template e caracteristicas
+			armazenamento de informacao sensivel
+			frescura: evitar replay attacks, integridade, robustez
+		nao tecnicos:
+			aceitacao pelos utilizadores
+	registo:
+		registo de um utilizador muito mais elaborado do que para uma password
+		obriga a fazer um conjunto de medidas ate que uma precisao adequada posso ser garantida
+		usual existirem individuos para os quais é dificil obter precisao desejada
+	precisao:
+		dois eixos:
+			taxa de falso positivos (FAR)
+			taxa de falos negativos (FRR)
+		FAR baixo => parece desejavel:
+			mais dificil de atacar, nao aceitamos "o atacante" 
+			sempre associado a FRR alto, o que prejudica a usabilidade
+			muitas vezes calibra-se para o Equal Error Rate Point: FAR = FRR
+	seguranca:
+		ataques a biometria sao normalmente de dois tipos:
+			intercepcao: perda de confidencialidade
+				permite falsificacao
+				perda de privacidade: podemos ser reconhecidos
+			usurpacao (spoofing)
+				criacao de caracteristicas falsas que enganam o sensor (ex. modelo de dedo, etc)
+				maior precisao na verificacao pode tornar dificil este tipo de ataques
+				pode-se usar combinacao com fator nao biometrico: pin, token, etc
+
+autenticacao e sessoes web
+	oq é uma sessao
+		sequencia de pedidos/resposta a um ou mais sites/aplicacoes:
+			pode ser longa ou curta
+			sem o conceito de sessao: todos os pedidos exigiram nova autenticacao
+		autenticar utilizador uma vez
+		manter essa informacao para os pedidos seguintes
+
+	HTTP auth
+		servidores HTTP mantinham ficheiros de hashes de passwords em pastas
+		resposta do servidor incluia pedido de autenticacao por password
+		browser envia hash de password em todos os pedidos subsequentes para a mesma pasta
+		logout implica fechar browser
+		site nao controla interface que utilizador usa para inserir password
+
+	tokens de sessao
+		servidor cria "testemunho" que fica guardado do lado do cliente e é devolvido em todos os pedidos relacionados:
+			cookies
+			informacao embutida nos links clicaveis
+			campos escondidos em formularios
+		hoje em dia utiliza-se combinacao de todos estes mecanismos para garantir robustez
+		tokens devem ser imprevisiveis e invalidados quando se faz logout
+
+	session hijacking
+		ataques a tokens de sessao
+			roubo de token
+				cross-site scripting (XSS)
+				eavesdropping sobre HTTP
+				falha de logout (token nao invalidado pelo servidor)
+				mitigacao: ligar token à maquina (ex. endereco IP)
+			token fixation
+				atacante inicia sessao (low privilege) e recebe token
+				atacante "convence" utilizador a fazer login com o mesmo token (ex. embutido num url)
+					token do atacante passa a ter privilegios de utilizador
+				mitigacao: nunca elevar privilegios/fazer login sem criar token novo

@@ -1,0 +1,10 @@
+lab5
+output.txt  
+trace.txt
+.gdbinit
+.clang-format
+timer.o
+utils.o
+lab5.o
+kdb.o
+

@@ -1,0 +1,58 @@
+transport layer security (tls)
+
+modelo de seguranca
+	atacante na rede:
+		controla infra-estrutura: routers, DNS, etc
+		escuta, injeta, bloqueia, altera pacotes/mensagens
+
+historicamente handshake tls usava maioritatiamente:
+	transporte de uma chave de sessao do cliente para o servidor
+	autenticacao implicita do servidor => utilizacao correta da chave de sessao
+hoje em dia tornam-se evidentes as vantagens de Diffie-Hellman:
+	eficiencia com utilizacao de curvas elipticas
+	perfect forward secrecy:
+		chaves de longa duracao sao utilizadas para assinaturas e nao para transporte de chaves de sessao
+		comprometer uma chave de longa duracao nao compromete acordos de chave passados
+	problema: dados cifrados com chave pre-partilhada vulneravel a ataques por repeticao
+
+utilizacao do TSL implica PKI
+	servidor autentica a troca DH com uma assinatura digital
+	como é que cliente conhece a chave de verificacao do servidor?
+		servidor envia certificado de chave publica
+		cliente verifica validade do certificado
+			nome de dominio faz match com subject do certificado
+			é possivel utilizar um wildcard no item mais à esquerda do DN 
+		cliente utiliza chave publica do certificado para verificar assinatura digital no protocolo DH
+	recordar:
+		cliente nao autenticado => servidor nao sabe com quem esta a falar
+	
+Integracao TLS/HTTP
+	mensagens HTTP sao transmitidas usualmente como payloads TLS depois do canal estabelecido
+	problemas/solucoes:
+		web proxy: proxy precisa de saber o cabeçalho HTTP para estabelecer ligacao
+			cliente envia nome de dominio antes do client-hello do TLS
+		virtual hosts: mesmo IP com multiplos DNS => como sabe o servidor que certificado devolver?
+			solucao antiga: client-hello inclui nome do dominio do servidor
+			TLS1.3 tenta preservar privacidade do nome do dominio (certificado cifrado)
+				solucao futura: nome do dominio cifrado com chave publica proveniente do DNS
+	porque nao utilizar HTTPS para tudo?
+		antigamente => performance
+		hoje em dia => AES-NI => aceleradores de HW => nao ha desculpas
+	
+	TLS/HTTP nos browsers
+		e se nos convencerem a fazer uma ligacao http://www.paypal.com ?
+			politica correta do servidor => redirecionar pedidos HTTP para HTTPS
+			mas um MiM poderia ligar-se em nosso nome ao site
+			isto chama-se um SSL Strip Attack
+			solucao: possivel incluir nos cabecalhos informacao de que todas as ligacoes seguras devem ser feitas por HTTPS (Strict Transport Security
+			) => desaparece com limpeza da cache
+		nunca esquecer ataques MiM:
+			so sao impedidos se conseguirmos autenticar chave publica do servidor
+		potenciais problemas de mixed content HTTP/HTTPS:
+			nunca utilizar objetos embebidos a partir de links HTTP
+
+privacidade
+	TLS ainda revela muita informacao
+	analise de trafego permite muitas vezes reconhecer:
+		com que servidor está a interagir
+		que operacoes estao a fazer

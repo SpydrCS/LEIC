@@ -1,0 +1,281 @@
+antigamente: principalmente utilizada em meios militares/estatais
+hoje em dia: 
+	ciencia
+	normas internacionais
+	
+oq nao é?
+	solucao para tds os problemas
+	fiavel mesmo q seja bem implementada
+
+seguranca da informacao
+	em transito (online) ex. https
+	em transito (offline) ex. email
+	em repouso ex. disk encryption
+
+seguranca da informacao
+	confidencialidade
+		informacao acessivel apenas ao emissor e recetor
+		cifras simetricas e assimetricas, acordos de chave
+	autenticidade (e integridade)
+		recetor tem a certeza q dados vieram sem alteracao de emissor
+		recetor apenas aceita mensagens de emissor
+		assinaturas, acordos de chave, MAC
+	nao-repudio
+		emissor nao pode negar envio da mensagem
+
+criptografia hoje em dia
+	definicoes precisas e rigorosas de seguranca
+		modelos matematicos da realidade
+	quando seguranca de uma construcao criptografica se baseia num pressuposto q n conseguimos provar:
+		esse pressuposto deve ser simples e descrito de forma precisa
+		utilizam se poucos destes pressupostos na criptografia moderna
+		sao escrutinados por toda a comunidade
+	construcoes criptograficas devem ser justificadas formalmente
+		prova de q satisfaz definicao de acordo com o primeiro principio (definicoes precisas...)
+		possivelmente, assumindo pressupostos enunciados de acordo com o segundo principio (quando seguranca...)
+
+cifras simetricas
+	recebe 3 parametros
+		k - chave secreta (igual dos dois lados, tipicamente 128 bits)
+		m - mensagem para transmitir
+		n - nonce (parametro publico a ser mudado sempre que transmitimos)
+	output para nuvem
+		c = Enc(k,n,m)
+	depois da nuvem recebe-se "c"
+		m = Dec(k,n,c)
+	
+	algoritmos (encrypt e decrypt) sao publicos e standard
+		
+
+	casos de uso:
+		chave usada apenas uma vez (one-time key)
+			nonce é irrelevante
+			ex. email cifrado usa chave fresca para cada mensagem
+		chave usada muitas vezes (many-time key)
+			nonce nao se pode repetir: numero de sequencia ou valor aleatorio
+			ex. cifrar disco ou HTTPS
+	
+	one-time-pad
+		garante confidencialidade contra "eavesdroppers"
+		problemas:
+			chave (k) do tamanho do texto limpo
+			chave pode ser usada apenas uma vez
+		solucao para comprimento da chave:
+			pseudo-random generator
+			problema do PRG:
+				se n houve nonce, PRG(k) é sempre igual
+			solucao para isto:
+				permite usar um nonce publico
+					ex. PRG(k, n1), PRG(k,n2)
+	
+	cifras de bloco
+		nao sao cifras, permitem construir cifras
+
+	as cifras acima assumem que o atacante apenas observa a interacao, ou seja, nao defende contra ataques ativos
+		se o atacante alterar o criptograma, o recetor pode nao perceber
+	
+	Message authentication code (MAC)
+		MAC - algoritmo publico
+		m - mensagem
+		t - tag
+		k - chave secreta (128 bits)
+		envia m e k, t = MAC(k,m)
+		recebe t' = MAC(k,m)
+		tags nao encriptam mensagem
+		garantias de MAC:
+			recebemos (m,t) com t = MAC(k,m) e apenas Alice conhece k
+			alice transmitiu corretamente a mensagem
+				mas e se atacante n entregar
+				ou entregar varias vezes
+			MAC nao permite detetar (so por si) estes ataques
+			solucao para detetar:
+				usar numero de sequencia e autenticar t = MAC(k, n||m)
+				transmitimos (m,t) mas recetor mantem o mesmo numero
+				verificacao da tag, mesmo n dos dois lados
+		confidencialidade e autenticidade
+			precisamos usar cifra(confidencialidade) e mac(autenticidade)
+			precisamos de duas chaves secretas
+			como combinar cifra com MAC?
+				encrypt and mac
+					c = Enc(k1, m)
+					t = MAC(m,k2)
+					funciona sempre desde que componentes sejam seguros independentemente
+					permite rejeitar criptograma antes de decifrar
+				mac then encrpyt
+					c = Enc(k1, m || t)
+					t = MAC(m, k2)
+				encrypt then mac
+					c = Enc(k1, m)
+					t = MAC(c,k2)
+
+authenticated encryption with associated data (AEAD)
+	abstracao correta para implementacao de canal seguro com criptografia simetrica
+	garante autenticidade do criptograma e dados
+		enc(n,k,m,data) => (c,t)
+		dec(n,k,c,data) => m , mas apenas de (c,data) autenticos
+	chave pode ser usada multiplas vezes se "n" nao repetir
+	data utilizada para vincular criptograma ao contexto
+
+aleatoriedade
+	de onde veem os nonces, chaves, etc?
+	na analise teorica, assumimos sempre aleatoriedade perfeita:
+		sequencias de bits
+		cada bit é independente de todos os oturos
+		probabilidade de ser 0 ou 1 é exatamente 50%
+	mecanismos mais comuns para aleatoriedade:
+		fontes de entropia
+			medicao de strings de bits a partir de processos fisicos (temperatura, atividade do processador, etc)
+			extremamente lento
+		gerador pseudo-aleatorio
+			estado: inicializado e actualizado periodicamente com fontes de entropia
+			algoritmo realimentado invocado quando SO precisa
+				produz bits pseudoaleatorios, actualiza estado
+
+Gestao de chaves
+	com criptografia simetrica
+		n agentes
+			solucao ad-hoc => n(n-1)/2 chaves
+		pre-distribuicao de chaves
+			manual?
+			como adicionar novo agente?
+		sistemas fechados
+			sistema aonde posso ter entidade (servidor, etc) q vai ter de conhecer toda a gente
+				key distribution center
+					armazena 1 chave de longa duracao partilhada com cada agente
+					adicionar e remover agente é so falar com servidor central
+					para agente A falar com B, A fala com distribution center e depois o center fala com B
+			entidade central conhece tudo, ou seja, ponto central de falha
+
+chaves de sessao
+	danos limitados se comprometidas
+chaves de longa duracao
+	requisitos fortes de seguranca no armazenamento
+
+criptografia simetrica
+	limitacoes:
+		se for possivel viver sem criptografia de chave publica
+			perfeito
+			usar criptografia simetrica => economia de mecanismos
+		problema: chaves simetricas de longa duracao pre-partilhadas
+			sistemas abertos sincronos
+				cifras de chave publica
+			sistema abertos assincronos
+				acordos de chave + assinaturas digitais
+		problema: nao-repudio
+			sistemas abertos
+				assinaturas digitais
+
+cifras de chave publica
+	muitos emissores, todos teem acesso a uma certa chave publica para encriptar informacao
+	1 recetor, só ele tem acesso à chave privada necessaria para desencriptar a mensagem
+	
+	muito mais ineficientes do que cifras simetricas
+		chaves assimetricas:
+			milhares de bits (vs 128)
+		payload
+			chave simetrica
+
+paradigma hibrido
+	emissor gera chave de sessao simetrica e usa-a para cifrar mensagem
+	emissor conhece chave publica do recetor
+	recetor recebe dois criptogramas
+		- chave de sessao k usando sk (secret key)
+		- mensagem usando k
+
+assinaturas digitais
+	apenas um emissor
+	muitos recetores
+	sk: chave de assinatura
+	vk: chave publica de verificacao
+	sig: algoritmo Sign
+	ver: algoritmo Verifiy
+	emissor envia sig = Sig(sk,m)
+	recetor recebe e faz Ver(vk,m,sig)
+	garantem:
+		nao falsificavel,reutilizavel e repudiavel
+		garantia de autoria do documento/acordo com o conteudo
+		documento nao alterado depois de assinado
+	garantias dependem de pressupostos:
+		chave de assinatura nao comprometida
+		algoritmo de assinatura criptograficamente seguro
+		chave publica autentica => infra-estrutura de chaves publicas
+	garantem tambem autenticidade e integridade
+		tal como Message authentication codes simetricos
+		mas:
+			nao necessitam de chave secreta pre-partilhada
+			garantem propriedade adicional de nao-repudio:
+				signitario nao pode negar que nao assinou aquilo
+				
+
+envelopes digitais
+	combinacao de cifras assimetricas e assinaturas digitais
+	para garantir nao repudio:
+		assinar documento original e so depois cifrar
+		nas cifras de chave publica quem cifra nao consegue decifrar
+		pode alegar que assinou um criptograma cujo conteudo desconhecia
+
+resumo:
+	criptografia simetrica
+		canais seguros e eficientes
+		exigem chaves secretas iguais de ambos os lados
+		chaves secretas confidenciais e autenticas
+	criptografia de chave publica
+		autenticacao e nao-repudio com assinaturas digitais
+		confidencialidade com cifras de chave publica
+		nao exigem chaves partilhadas e confidenciais
+		exigem chaves publicas autenticas
+
+protocolo diffie-hellman
+	parametros publicos (G, g, º)
+	G
+		conjunto de valores entre [o,p[ sendo p um valor primo grande
+		hoje em dia, pontos numa curva eliptica => usado hoje por razoes de eficiencia
+	º 
+		operacao muito eficiente que mapeia dois elementos do conjunto num terceiro
+	g
+		gerador
+		permite codificar um inteiro grande gerado aleatoriamente
+		para "e" na gama 0...q-1 (para q primo grande), g^e = g º g º g...
+	Temos (g^x)^y = g^xy = g^yx = (g^y)^x
+	exemplo:
+		"g" é publico, toda a gente conhece
+		"x" e "y" sao secretos
+		ninguem sabe quem é o outro (alice n sabe q ta a flr c bob, bob n sabe q ta a flr c alice)
+
+		Alice						Bob
+
+		gera um valor x de 0->q			gera um valor y de 0->q
+		X = g^x					Y = g^y
+		envia X para bob				envia Y para alice
+		K = Y^x					K = X^y
+		logo, K = (g^y)^x = g^yx = g^xy = (g^x)^y
+
+	Man-in-the-middle attack
+		exemplo
+		
+		Alice						Intruso				Bob
+		faz as mesmas coisas de cima		gera valor i de 0->q		mesmas coisas de cima
+		envia X para intruso			I = g^i				envia Y para intruso
+								envia I para alice e bob
+
+		Como nao se consegue confirmar para quem se está a mandar a informacao, nao ha como saber que ha um intruso
+	
+		estes ataques sao sempre possiveis quando:
+			utilizamos parametros publicos trocados na rede
+			sem sabermos a sua origem
+	
+	protocolo diffie-hellman autenticado
+		alice tem chave de autenticacao e bob conhece essa chave, e vice-versa
+		parte inicial exatamente igual
+		depois de alice enviar X, bob envia Y com assinatura de par de X,Y, ou seja, "Y, Sig(sk(bob), X || Y)" sendo sk = secret key
+		alice recebe esta assinatura e envia a sua propria assinatura da mesma maneira, mas com a sua sk em vez da do bob
+		depois confirma-se usando o K como antes
+	
+estabelecimento de canais seguros
+	na pratica, obriga a:
+		autenticacao de chaves publicas => protegem acordo de chaves
+		protocolo de acordo de chaves
+			propaga autenticidade de chaves publicas para chave simetrica
+			protege chave simetrica quanto a confidencialidade
+			mesmo que chaves de assinatura sejam comprometidas no futuro
+		tecnologia simetrica (AEAD) para troca eficiente de informacao com garantia de confidencialidade e autenticidade
