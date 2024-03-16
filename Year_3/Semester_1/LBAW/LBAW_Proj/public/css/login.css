@@ -1,0 +1,157 @@
+@font-face {
+    font-family: 'BlocExtCond';
+    src: url(blocextcond_w08_regular-webfont.woff);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box !important;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+    display: table;
+    width: 100%;
+    height: 100%;
+    background: #1a1a1d;
+    color: #000;
+    line-height: 1.6;
+    position: relative;
+    font-family: 'BlocExtCond'!important;
+    font-weight: 300;
+    overflow: hidden;
+}
+
+.lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    margin: auto;
+    width: 90vw;
+    z-index: -1;
+}
+
+.line {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    z-index: -1;
+}
+
+.line::after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 15vh;
+    width: 100%;
+    top: -50%;
+    left: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #c3073f 75%, #c3073f 100%);
+    animation: drop 7s 0s infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+.line:nth-child(1) {
+    margin-left: -25%;
+}
+
+.line:nth-child(1)::after {
+    animation-delay: 2s;
+}
+
+.line:nth-child(3) {
+    margin-left: 25%;
+}
+
+.line:nth-child(3)::after {
+    animation-delay: 2.5s;
+}
+
+@keyframes drop {
+    0% {
+        top: -50%;
+    }
+    100% {
+        top: 100%;
+    }
+}
+
+#content {
+    background: transparent;
+    margin: 0;
+}
+
+.mgt3em {
+    margin-top: 3em!important;
+}
+
+.mgt13em {
+    margin-top: 13em!important;
+}
+
+.white-font {
+    color: white!important;
+}
+
+.btn-div {
+    width: 97px;
+    height: 48px!important;
+    background: url("../images/red-texture.png") repeat center center/70px 70px;
+    margin: 0!important;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+.btn-div a {
+    padding-top: 2px;
+}
+
+.btnz {
+    padding: 0 10px;
+    background-color: #1a1a1d;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a1a1d!important;
+    font-family: 'BlocExtCond'!important;
+    font-weight: 300;
+}
+
+a.btnz:hover {
+    margin: 2px 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    padding-top: 0;
+}
+
+.btnz:hover {
+    margin: 2px 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+}
+
+.all-btns {
+    display: flex;
+}
+
+.button-outline {
+    background: #1a1a1d!important;
+    width: 87px;
+    padding: 0;
+    border: 0;
+}
+
+.mgn {
+    width: 10px;
+}

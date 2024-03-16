@@ -1,0 +1,24 @@
+Problem 1:
+Given the Finite Automaton below... answer following questions:
+a) 5 points
+b) 10 points
+c) 5 points
+
+Problem 2:
+Top-down predictive parsing
+Given the following CFG grammar G
+a) 5 points
+b) 10 points
+c) 10 points
+d) 5 points
+
+Problem 3:
+Attributive grammar and syntax-directed translation
+a) 10 points
+b) 15 points - develop the attributes and semantic rules associated with each grammar production indicating if the attributes are either synthesized or inherited. Only primitive data typed atributes, such as int or bool are allowed.
+c) 5 points
+
+Problem 4:
+Code generation
+a) 15 points
+b) 5 points

@@ -1,0 +1,62 @@
+Game types:
+	information:
+		perfect: chess, checkers, monopoly
+		imperfect: poker, scrabble, king
+	luck/deterministic:
+		deterministic: chess, checkers
+		luck: monopoly, poker
+	"attack" plan:
+		algorithm for perfect game
+		finite horizon, approximate evaluation
+		tree cuts to reduce costs
+
+minimax algorithm
+	search problem with:
+		initial state (board position and who is next to play)
+		set of operators (define the legal moves)
+		terminal test (determines whether game is over or in terminal state)
+		utility funciton (gives numerical value to result of game, ex: 1-win, 0-draw, -1-defeat)
+	algorithm strategy:
+		generate complete tree of end states (limited depth first search)
+		apply utility function to these states
+		calculate utility values back to root of three, one layer at a time
+		choose movement with highest value
+	properties:
+		complete
+		optimal
+	problem: not viable for any minimally complex game
+	limited resources:
+		usual approach:
+			cutting test: depth limit
+			evaluation function: estimated utility for position/state
+	cuts:
+		minimax cutoff identical to minimax except:
+			terminal test replaced by cutoff
+			utility replaced by evaluation (calculates evaluation of reached position)
+
+alpha-beta cuts
+	alpha is best value (for Max) found so far on current path
+	if V is worse than alpha, Max should avoid it (cut off branch)
+	beta define same way but for Min
+	alpha-beta cuts do not affect final result
+	good ordering improves cutting efficiency
+
+negamax
+	variant of minimax that relies on zero-sum property of two-play game
+	relies of fact that max(a,b) = -min(-a, -b)
+	player on move looks for move that maximizes the negation of the value resulting from the move
+
+monte carlo tree search (MCTS)
+	heuristic search algorithm for some kinds of decision processes
+	algorithm:
+		selection
+		expansion
+		simulation
+		backpropagation
+	advantages:
+		simple to implement
+		can operate effectively without any knowledge in particular domain apart from rules and end conditions
+	disavantages:
+		requires huge amount of memory
+		reliability
+		mcts needs huge number of iterations to be able to effectively decide most efficient path

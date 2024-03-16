@@ -1,0 +1,102 @@
+COP - combinatorial optimization problem
+	in a formal problem we usually find:
+		data (parameters)
+		decision variables
+		constraints
+	problem is typically finding values for variables that optimize some objective function subject to constraints
+		optimizing over some discrete structures gives a COP
+
+solving optimization problems
+	exact algorithms:
+		set of instructions that result in solution of problem when followed correctly and assumed to give optimal solution
+		typically hard to implement for practical, large, real-world problems
+		very large run times, impossible in practice for large problems
+		sometimes link between real-world and formal problem is weak
+	heuristic algorithms:
+		do not guarantee optimal solution
+		do not have bound on quality (can return solution that is arbitrarily bad compared to optimal)
+		in practice, have proven very successful in solving large real-world problems
+	exact methods:
+		explicit enumeration
+		implicit enumeration
+			divide problem into simpler problems
+			solve simpler problems exactly
+	trivial solutions
+	inspection of problem instance
+	constructive methods
+		gradual construction with greedy heuristic
+		constraint programming
+	solve simpler problem
+		remove/modify constraints
+		modify objective function
+	starting with initial solution and improving it
+
+local search
+	small modification of solution gives a "neighour solution"
+	certain sets of operations on solution gives a set of neighbour solutions, a neighbourhood
+	neighbourhood:
+		neighbourhood function is a mapping from a solution to the set of possible solutions, reached by a move
+		for a given solution, N defines a neighbourhood of solutions
+		most ofter defined by a given operation on a solution
+		often simple operations:
+			remove an element of solution
+			add an element to solution
+			interchange two or more elements of solution
+	advantages:
+		quite easy to design local sarch
+		idea of improving a solution by making small changes is very easy to understand
+	disadvantages:
+		search stops when no improvement can be found
+		restarting search might helpm but is often not effective
+		some neighbourhoods can become very large (time consuming)
+	main challenge:
+		how can we avoid search stopping in local optimum?
+
+local search/neighbourhood search
+	start with initial solution
+	iteratively search neighbourhood for better solutions
+	define strategy for which solution of neighbourhood will be accepted as next solution
+	define stoppping criteria
+	define what happens when neighbourhood does not contain better solution
+	heuristic method
+	iterative method
+	small changes to a given solution
+	alternative search strats:
+		accept first improving solution (first accept)
+		search full neighbourhood:
+			"steepest descent"
+			"hill climbing"
+			"iterative improvement"
+	strategies with randomization
+		random neighbourhood search ("random walk")
+		"random descent"
+	defining a local search solving method needs:
+		combinatorial optimization problem (COP)
+		starting solution
+		defined search neighbourhood
+		definition of possible moves
+		solution evaluation function
+		neighbourhood evaluation strat
+		move selection strat
+		stopping criteria
+
+"best accept" and "first accept"
+	both stop in local optimum
+	"best accept" - selects best neighbour
+	"first accept" - selects first neighbour
+	local search can be regarded as traversal in a directed graph (neighbourhood graph)
+
+heuristics and meta-heuristics:
+	heuristics (greek - "to find")
+		technique designed to solve a problem that ignores whether solution can be proven to be correct
+		intended to gain computational performance or conceptual simplicity, at cost of accuracy or precision
+	meta-heuristics
+		classification:
+			x/y/z:
+				x = A (adaptive memory) or M (memoryless)
+				y = N (systematic neighbourhood search) or S (random sampling)
+				z = 1 (one current solution) or P (population of solutions)
+		metaheuristics and local search:
+			in Local Search, we iteratively improve a solution by making small changes until we cannot make further improvements
+			Metaheuristics can be used to guide a Local Search, and to help it to escape a local optimum
+			several metaheuristics based on local search

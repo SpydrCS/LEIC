@@ -1,0 +1,111 @@
+-------------------------
+CRIPTOGRAFIA (10 perguntas)
+-------------------------
+
+qual das seguintes caracteristicas nao se refere à seguranca da informacao
+A) Confidencialidade
+B) Autenticidade
+C) Nao-repudio
+D) Fiavel
+
+quando seguranca de uma construcao criptografica se baseia num pressuposto q n conseguimos provar, esse pressuposto deve ser:
+A) só descrito de forma precisa
+B) só simples
+C) nem simples nem descrito de forma precisa
+D) simples e descrito de forma precisa
+
+qual das opcao nao existe quando falamos de MAC
+A) encrypt and mac
+B) mac then encrypt
+C) encrypt then mac
+D) mac with encrypt
+
+em sistemas fechados:
+A) para agente A falar com agente B, pode falar diretamente
+B) entidade central conhece apenas algumas partes do sistema
+C) nao ha a opcao de adicionar/remove agentes
+D) cada agente tem uma chave de longa duracao
+
+cifras de chave publica teem:
+A) muitos emissores, tendo apenas alguns acesso à chave publica para encriptar
+B) 1 emissor
+C) 1 recetor, sendo a sua chave privada para desencriptar a mensagem conhecida por todos
+D) muitos emissores mas apenas um recetor
+
+o que é falso sobre assinaturas digitais:
+A) teem apenas um emissor
+B) teem muitos recetores
+C) nao falsificavel, reutilizavel e repudiavel
+D) necessitam de chave secreta pre-partilhada
+
+envelopes digitais:
+A) nao sao uma combinacao de cifras assimetricas e assinaturas digitais
+B) cifra-se antes de assinar o documento original
+C) nas cifras de chave publica, quem cifra consegue decifrar
+D) garantem nao-repudio
+
+criptografia simetrica nao:
+A) sao seguros e eficientes
+B) exigem chaves secretas iguais de ambos os lados
+C) teem chaves secretas confidenciais e autenticas
+D) utilizam assinaturas digitais
+
+criptografia de chave publica nao:
+A) utiliza assinaturas digitais para autenticacao e nao-repudio
+B) utiliza cifras de chave publica para confidencialidade
+C) nao exigem chaves publicas autenticas
+D) exigem chaves partilhadas e confidenciais
+
+no protocolo diffie-hellman:
+A) o gerador g nao é conhecido por toda a gente
+B) um utilizador tem a certeza de com quem está a falar
+C) está sujeito a ataques MiM
+
+no protocolo diffie-hellman autenticado:
+A) enviam os dois as suas mensagens ao mesmo tempo
+B) ambos os utilizadores teem uma chave de autenticacao e o outro conhece-a
+
+o protocolo de acordo de chaves:
+A) é problematico se chaves de assinatura forem comprometidas no futuro
+B) propaga autenticidade de chaves publicas para chave simetrica
+
+-------------------------
+PKI (5 perguntas)
+-------------------------
+
+quem é que envia/recebe certificado de chave publica em:
+A) cifras assimetricas, o emissor
+B) assinaturas digitais, o recetor
+C) acordo de chaves mutuamente autenticado, ambos
+
+qual e a garantia que tenho se alguem me mandar o certificado dessa pessoa e o certificado da CA pela internet?
+A) muita garantia juro
+B) n ha garantia pq qq pessoa podia ter criado esses certificados
+
+validar um certificado de raiz implica acreditar que a CA é de confianca:
+A) Falso
+B) Verdadeiro
+
+quanto à revogacao de PKI:
+A) um certificado fora do periodo de validade pode ainda ser valido
+B) no mundo real, o trsusted service provider list (TSL) é usado em comunidades grandes
+C) no mundo real, certificate pinning nao utiliza white-list proprias de cada web-server
+D) no mundo real, o online certificate status protoco é usado em contextos organizacionais
+
+-------------------------
+AUTENTICACAO (4 perguntas)
+-------------------------
+
+
+
+-------------------------
+SEGURANCA DE REDES (6 perguntas)
+-------------------------
+
+-------------------------
+MALWARE (3 perguntas)
+-------------------------
+
+-------------------------
+TLS (2 perguntas)
+-------------------------

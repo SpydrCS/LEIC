@@ -1,0 +1,83 @@
+Agent
+	Anything that can be viewed as perceiving its environment through sensors and acting upon that environment through actuators
+
+Rational agent
+	does the right/correct thing
+	ideal rational agent:
+		for each sequence of perceptions, does action that maximizes measure of performance
+	mapping between perceptions and actions
+
+Intelligent agent
+	Agent = architecture + program
+	agent function is abstract mathematical description
+	agent program is specific implementations, running on some physical system
+	structure:
+		agent displays behavior-action that is performed after given sequence of perceptions
+	requisites:
+		perceive environment (sensors)
+		decide actions to execute (think)
+		execute actions in environment using its actuators
+		communicate?
+
+agents vs objects:
+	agents decide what to do
+	object methods are called externally
+	agents react ot sensors and control actuators
+	"objects do it for free, agents do it for money"
+
+agent program/types
+	internal data structures are updated using perceptions and used to make decision of the actions to be performed (best action)
+
+the nature of environments: PEAS
+	when designing an agent, the first task is to characterize its task environment and the task
+	PEAS:
+		performance measure
+		environment
+		actuators
+		sensors
+
+properties of environments:
+	acessible vs inaccessible
+		if agent sensors can detect everything that is relevant in environment
+	deterministic vs not
+		if next state is determined by previous state and agent's actions
+	episodic vs not
+		divided into episodes
+		subsequent episodes do not rely on actions in previous episodes
+	static vs dynamic
+		dynamic if it changes while agent is thinking
+	discrete vs continuous
+		discrete if there is finite number of perceptions and actions
+	singles agent vs multi-agent
+		agent operating alone in environment vs multiple (cooperative or competitive)
+
+basic types of agents:
+	simple reactive/reflex agents
+		based on if-then rules table
+		example:
+			if state = dirty, return suck
+			else = return switch
+	Agents with world representation
+		model-based reflex agents
+		maintain internal state (representation of world)
+	Objective-based agents
+		description of state of world and objective to be achieved
+		example of objective: getting from porto to lisbon
+		problem solving by search, planning
+	Utility-based agents
+		utility: performance measure
+		kind of agent's degree of happiness
+		maps current state to a value
+	Learning Agents
+		learning element and performance evaluation element
+		performance increases over time by using machine learning
+	BDI Agents
+		three "mental attitudes" (BDI)
+			(B)eliefs (information) - information the agent has about world
+			(D)esires (motivation) - all possible states of affairs that the agent might like to accomplish
+			(I)ntentions (deliberation) - all states of affairs that agent decided to work towards
+
+Multi-agent system (MAS)
+	multiple agent that:
+		exhibit autonomous behaviour
+		interact with the other agents in system
